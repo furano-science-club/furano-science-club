@@ -86,4 +86,155 @@
         }
 
         /* --- ページヘッダー --- */
-        .page-header
+        .page-header {
+            padding: 180px 20px 80px;
+            text-align: center;
+            position: relative;
+        }
+        .page-header h1 {
+            font-size: 2.6rem;
+            letter-spacing: 4px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        .page-header h1 span {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+        }
+        .page-header p {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            letter-spacing: 2px;
+        }
+
+        /* --- コンテナ --- */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        /* --- ラボ・コンテンツ（ノート風） --- */
+        .lab-note {
+            background-color: var(--bg-box);
+            border: 1px solid var(--border-neon);
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 右上に光るインジケータのような装飾 */
+        .lab-note::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .lab-note h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed var(--border-neon);
+            padding-bottom: 10px;
+        }
+
+        .lab-note p {
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .lab-note ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        .lab-note li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            color: var(--text-sub);
+        }
+        .lab-note li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+
+        /* --- フッター --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--border-neon);
+            color: var(--text-sub);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .page-header h1 { font-size: 2rem; }
+            .lab-note { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>SCIENCE</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="water_quality.html">水質調査</a></li>
+                <li><a href="astronomy.html">天体観測</a></li>
+                <li><a href="hotaru_lab.html" class="active">ほたる研究室</a></li>
+                <li><a href="schedule.html">年間予定</a></li>
+                <li><a href="blog.html">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>HOTARU <span>LABORATORY</span></h1>
+        <p>暗闇に明滅する、生命のシグナルを追う</p>
+    </div>
+
+    <main class="container">
+        
+        <div class="lab-note">
+            <h2>人工飼育と独自の環境制御システム</h2>
+            <p>富良野の豊かな生態系の象徴でもある「蛍」。科学部では、部室内に設置した専用の水槽群を使い、ヘイケボタルの通年人工飼育および繁殖実験に挑戦しています。</p>
+            <p>蛍の幼虫やその餌となるカワニナの生存率を上げるため、ろ過フィルターの自作や、自律的な温度・水流管理を試行錯誤しています。ただ観察するだけでなく、環境を「制御・創造する」アプローチがこのラボのテーマです。</p>
+        </div>
+
+        <div class="lab-note">
+            <h2>現在の研究・観察トピック</h2>
+            <ul>
+                <li>水温の細かな変化が幼虫の発育速度に与える影響のモニタリング</li>
+                <li>LEDを用いた特定の光周期による、成虫の羽化タイミングの誘導実験</li>
+                <li>富良野盆地における野生ホタル生息地の水質環境との相関データ収集</li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 富良野高校科学部. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
