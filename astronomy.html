@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天体観測 - 富良野高校科学部</title>
+    <style>
+        /* --- デザインシステム（変数の定義） --- */
+        :root {
+            --bg-deep: #030712;       /* 漆黒（夜空のベース） */
+            --bg-panel: #0b1329;      /* パネル背景（少し青みのある黒） */
+            --primary: #f59e0b;       /* スターゴールド（星の輝き） */
+            --border-glow: #1e293b;   /* 境界線の色 */
+            --text-main: #f8fafc;     /* メインテキスト（純白に近い） */
+            --text-sub: #94a3b8;      /* サブテキスト（星雲のようなグレー） */
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        /* --- リセット＆基本スタイル --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- ヘッダー（構造共通・天体用超ダーク版） --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.9);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .logo span {
+            color: var(--primary);
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        nav a {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+            color: var(--text-sub);
+        }
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        /* --- ページヘッダー --- */
+        .page-header {
+            padding: 180px 20px 80px;
+            text-align: center;
+            background: radial-gradient(circle at 50% 100%, #0f172a 0%, var(--bg-deep) 70%);
+            position: relative;
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            letter-spacing: 6px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        .page-header h1 span {
+            color: var(--primary);
+        }
+        .page-header p {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* --- コンテナ --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        /* --- グリッドレイアウト（機材＆ギャラリー） --- */
+        .grid-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .panel:hover {
+            transform: translateY(-5px);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .panel-tag {
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .panel h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .panel p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* ダミー画像エリア（カメラのレンズのような円形・メカニカルな表現） */
+        .visual-placeholder {
+            width: 100%;
+            height: 200px;
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.2);
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.02));
+            margin-top: 25px;
+        }
+
+        /* --- フッター --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--border-glow);
+            color: var(--text-sub);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .page-header h1 { font-size: 2rem; }
+            .grid-two { grid-template-columns: 1fr; gap: 20px; }
+            .panel { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>SCIENCE</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="water_quality.html">水質調査</a></li>
+                <li><a href="#" class="active">天体観測</a></li>
+                <li><a href="#">ほたる研究室</a></li>
+                <li><a href="#">年間予定</a></li>
+                <li><a href="#">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>ASTRONOMY <span>OBSERVATION</span></h1>
+        <p>光害の少ない富良野の夜空をアーカイブする</p>
+    </div>
+
+    <main class="container">
+        <div class="grid-two">
+            
+            <div class="panel">
+                <div class="panel-tag">// MISSION & ENVIRONMENT</div>
+                <h2>星の降る街、富良野</h2>
+                <p>十勝岳連峰を見仰ぐ富良野盆地は、大都市圏から離れているため夜空の暗さが極めて高く、絶好の天体観測ロケーションを誇ります。</p>
+                <p>科学部では月に数回、新月の夜を中心に学校の屋上や郊外での観測会を行っています。季節ごとの星座、惑星の表面模様、遥か彼方の星雲・星団をレンズに捉え、夜空の光度データを記録しています。</p>
+                <div class="visual-placeholder">[ IMAGING THE NIGHT SKY ]</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-tag">// EQUIPMENT SPECIFICATION</div>
+                <h2>主力の観測機材</h2>
+                <p>私たちの探求を支えるのは、高精度な光学機器たちです。大型の天体望遠鏡と自動導入赤道儀を組み合わせ、肉眼では見ることのできない宇宙の深部までアプローチします。</p>
+                <p>天体専用のCMOSカメラを用いた長時間露光撮影（コンポジット処理）技術も部内で継承しており、撮影したデジタルデータは画像処理を施して高解像度なギャラリーとしてまとめています。</p>
+                <div class="visual-placeholder">[ TELESCOPE & EQUATORIAL ]</div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 富良野高校科学部. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
