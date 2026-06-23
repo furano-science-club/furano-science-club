@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>富良野高校科学部 - OFFICIAL SITE</title>
+    <style>
+        /* --- デザインシステム（変数の定義） --- */
+        :root {
+            --bg-dark: #0a1128;       /* ディープネイビー（背景） */
+            --bg-card: #111f44;       /* 少し明るいネイビー（カード背景） */
+            --primary: #00e5ff;       /* クリスタルブルー（アクセント） */
+            --text-main: #f4f6fc;     /* メインテキスト（白に近い） */
+            --text-sub: #8fa0cc;      /* サブテキスト（青みがかったグレー） */
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        /* --- リセット＆基本スタイル --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- ヘッダー・ナビゲーション --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 17, 40, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--text-main);
+        }
+        .logo span {
+            color: var(--primary);
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        nav a {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+        }
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        /* アクティブなページのアンダーライン（HOME用） */
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        /* --- メインビジュアル（ヒーローセクション） --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            /* 幾何学的な背景グリッドをCSSで表現 */
+            background: linear-gradient(rgba(10, 17, 40, 0.6), rgba(10, 17, 40, 0.9)),
+                        radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15), transparent 40%),
+                        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px) 0 0 / 40px 40px,
+                        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px) 0 0 / 40px 40px;
+            padding: 0 20px;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+        .btn-scroll {
+            display: inline-block;
+            border: 1px solid var(--primary);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--primary);
+            background: rgba(0, 229, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .btn-scroll:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            cursor: pointer;
+        }
+
+        /* --- コンテンツ全体のコンテナ --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+        section {
+            margin-bottom: 120px;
+        }
+        .section-title {
+            font-size: 2rem;
+            letter-spacing: 3px;
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        /* --- 新入生勧誘セクション --- */
+        .recruit-box {
+            background: linear-gradient(135deg, var(--bg-card), rgba(17, 31, 68, 0.5));
+            border-left: 4px solid var(--primary);
+            padding: 50px;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .recruit-tag {
+            color: var(--primary);
+            font-size: 0.85rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .recruit-box h3 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+        .recruit-box p {
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        /* --- アクティビティログ（直近の活動報告） --- */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 2px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+        .timeline-date {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-family: monospace;
+            margin-bottom: 5px;
+        }
+        .timeline-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .timeline-desc {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+        }
+
+        /* --- フッター --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-sub);
+            font-size: 0.85rem;
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .hero-content h1 { font-size: 2.2rem; }
+            .hero-content p { font-size: 1rem; }
+            .recruit-box { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>SCIENCE</span></div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">HOME</a></li>
+                <li><a href="#">水質調査</a></li>
+                <li><a href="#">天体観測</a></li>
+                <li><a href="#">ほたる研究室</a></li>
+                <li><a href="#">年間予定</a></li>
+                <li><a href="#">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>富良野の自然を、<br>科学の眼で解き明かす。</h1>
+                <p>Hokkaido Furano High School Science Club</p>
+                <a href="#content" class="btn-scroll">EXPLORE LOGS</a>
+            </div>
+        </section>
+
+        <div class="container" id="content">
+            
+            <section id="join-us">
+                <div class="recruit-box">
+                    <div class="recruit-tag">// WANTED: FUTURE SCIENTISTS</div>
+                    <h3>教科書を閉じて、本物の科学を始めよう。</h3>
+                    <p>富良野高校科学部では、机の上だけでは終わらない、フィールドワークと実験に満ちたリアルな探求が君を待っている。水質調査、天体観測、そして幻想的な蛍の研究……広大な富良野の自然すべてが僕たちの研究室だ。</p>
+                    <p>理系・文系、これまでの知識の有無は関係ない。必要なのは「なぜ？」と思うほんの少しの好奇心だけ。ぜひ僕たちと一緒に、科学の新しい扉を開かないか？部室で待っている。</p>
+                </div>
+            </section>
+
+            <section id="activity-log">
+                <h2 class="section-title">ACTIVITY LOG</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2026.06.15</div>
+                        <div class="timeline-title">空知川流域の水質一斉調査を実施</div>
+                        <div class="timeline-desc">今年度第1回目となる水質調査を行いました。各ポイントでのパックテストおよびpH、電気伝導度の測定データを更新。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2026.05.28</div>
+                        <div class="timeline-title">春季合宿・深夜の天体観測会</div>
+                        <div class="timeline-desc">天候に恵まれ、絶好の観測条件の中で春の星座と星雲の撮影に成功。撮影データは天体観測ページにアップロード予定です。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2026.05.10</div>
+                        <div class="timeline-title">ほたる人工飼育室の環境セットアップ</div>
+                        <div class="timeline-desc">幼虫の生育状況に合わせ、水槽のろ過システムと温度管理用PCの再設定を行いました。順調に成長中。</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 富良野高校科学部. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
