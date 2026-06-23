@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水質調査 - 富良野高校科学部</title>
+    <style>
+        /* --- デザインシステム（変数の定義） --- */
+        :root {
+            --bg-light: #f7fafc;      /* 清潔感のある極薄のグレー（背景） */
+            --bg-white: #ffffff;      /* コンテンツ背景 */
+            --primary: #00a8cc;       /* アクアブルー（メイン） */
+            --secondary: #4cd3c2;     /* ミントグリーン（アクセント） */
+            --text-main: #2d3748;     /* メインテキスト（深いグレー） */
+            --text-sub: #718096;      /* サブテキスト（ライトグレー） */
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        /* --- リセット＆基本スタイル --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- ヘッダー（HOMEと共通の構造・色違い） --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 168, 204, 0.1);
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .logo span {
+            color: var(--primary);
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        nav a {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            position: relative;
+            padding: 5px 0;
+            color: var(--text-main);
+        }
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        /* --- ページヘッダー（上部見出し） --- */
+        .page-header {
+            padding: 160px 20px 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #e0f7fa 0%, #fff 100%);
+            position: relative;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            font-size: 1rem;
+            color: var(--text-sub);
+            font-family: monospace;
+        }
+
+        /* --- コンテナ --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* --- 調査概要セクション（カード） --- */
+        .intro-card {
+            background: var(--bg-white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 50px;
+            border-top: 4px solid var(--secondary);
+        }
+        .intro-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .intro-card p {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        /* --- 簡易データテーブル --- */
+        .data-section {
+            margin-top: 60px;
+        }
+        .data-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            margin-bottom: 30px;
+        }
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: var(--primary);
+            color: var(--bg-white);
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+        .data-table tr {
+            border-bottom: 1px solid #edf2f7;
+        }
+        .data-table tr:last-child {
+            border-bottom: none;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #fcfdfe;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background-color: #e6fffa;
+            color: #234e52;
+        }
+
+        /* --- フッター --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-white);
+            border-top: 1px solid #edf2f7;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            margin-top: 100px;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .page-header h1 { font-size: 2rem; }
+            .intro-card { padding: 25px; }
+            .data-table th, .data-table td { padding: 12px 10px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>SCIENCE</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="#" class="active">水質調査</a></li>
+                <li><a href="#">天体観測</a></li>
+                <li><a href="#">ほたる研究室</a></li>
+                <li><a href="#">年間予定</a></li>
+                <li><a href="#">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>WATER QUALITY</h1>
+        <p>フィールドワーク：富良野の水環境調査</p>
+    </div>
+
+    <main class="container">
+        
+        <section class="intro-card">
+            <h2>空知川流域の水質分析プロジェクト</h2>
+            <p>富良野高校科学部では、地域を流れる「空知川」およびその支流、さらには周辺の湧水群を対象に、定期的な水質調査を行っています。</p>
+            <p>パックテストを用いた簡易測定（COD、全窒素、全リンなど）に加え、デジタル測定器を用いたpHや電気伝導度（EC）の精密な経時変化データを蓄積。農業排水や生活排水が地域の河川環境に与える影響や、富良野盆地独自の清らかな水質サイクルを科学の視点から検証しています。</p>
+        </section>
+
+        <section class="data-section">
+            <h3>最新の調査結果（2026年6月調査分）</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>観測地点</th>
+                        <th>pH</th>
+                        <th>EC (mS/m)</th>
+                        <th>COD (mg/L)</th>
+                        <th>判定</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>空知川 上流エリア</td>
+                        <td>7.2</td>
+                        <td>11.4</td>
+                        <td>2.0以下</td>
+                        <td><span class="badge">極めて良好</span></td>
+                    </tr>
+                    <tr>
+                        <td>市内中心部 流入河川</td>
+                        <td>6.9</td>
+                        <td>18.5</td>
+                        <td>4.0</td>
+                        <td><span class="badge">基準値内</span></td>
+                    </tr>
+                    <tr>
+                        <td>鳥沼公園 湧水群</td>
+                        <td>7.4</td>
+                        <td>13.1</td>
+                        <td>1.0以下</td>
+                        <td><span class="badge">極めて良好</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="color: var(--text-sub); font-size: 0.9rem;">※COD（化学的酸素要求量）：数値が低いほど水が綺麗なことを示します。</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 富良野高校科学部. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
