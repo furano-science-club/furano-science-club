@@ -152,4 +152,113 @@
 
         /* 予定詳細エリア */
         .event-details {
-            flex-grow:
+            flex-grow: 1;
+        }
+        .event-tags {
+            margin-bottom: 6px;
+        }
+        .tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .tag.field {
+            background-color: #eff6ff;
+            color: var(--accent-blue);
+        }
+        .tag.official {
+            background-color: #faf5ff;
+            color: var(--accent-purple);
+        }
+
+        .event-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .event-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .schedule-item { padding: 20px; flex-direction: column; align-items: flex-start; }
+            .month-badge { border-right: none; border-bottom: 2px solid var(--border-color); width: 100%; margin-right: 0; margin-bottom: 15px; padding-bottom: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>SCIENCE</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="water_quality.html">水質調査</a></li>
+                <li><a href="astronomy.html">天体観測</a></li>
+                <li><a href="hotaru_lab.html">ほたる研究室</a></li>
+                <li><a href="schedule.html" class="active">年間予定</a></li>
+                <li><a href="blog.html">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>ANNUAL SCHEDULE</h1>
+        <p>科学部・年間活動予定カレンダー</p>
+    </div>
+
+    <main class="container">
+        <div class="schedule-list">
+
+            <div class="schedule-item">
+                <div class="month-badge">04<span>APR</span></div>
+                <div class="event-details">
+                    <div class="event-tags"><span class="tag field">部内イベント</span></div>
+                    <div class="event-title">新入生歓迎会 ＆ 部室公開</div>
+                    <div class="event-desc">新入生に向けて各研究のデモ（顕微鏡観察、実験機材の操作体験など）を行います。</div>
+                </div>
+            </div>
+
+            <div class="schedule-item">
+                <div class="month-badge">06<span>JUN</span></div>
+                <div class="event-details">
+                    <div class="event-tags"><span class="tag field">フィールドワーク</span></div>
+                    <div class="event-title">空知川流域 第1回 水質一斉調査</div>
+                    <div class="event-desc">夏の本格的な分析に向け、春から初夏にかけての基準データを採取する重要な調査です。</div>
+                </div>
+            </div>
+
+            <div class="schedule-item">
+                <div class="month-badge">08<span>AUG</span></div>
+                <div class="event-details">
+                    <div class="event-tags"><span class="tag field">フィールドワーク</span></div>
+                    <div class="event-title">夏季合同天体観測合宿</div>
+                    <div class="event-desc">光害のない山間部へ遠征し、ペルセウス座流星群の観測と天体写真の集中撮影を行います。</div>
+                </div>
+            </div>
+
+            <div class="schedule-item">
+                <div class="month-badge">10<span>OCT</span></div>
+                <div class="event-details">
+                    <div class="event-tags"><span class="tag official">公式大会</span></div>
+                    <div class="event-title">高文連理科研究発表大会 北海道大会</div>
+                    <div class="event-desc">水質調査班、ほたる研究班がそれぞれの研究成果をまとめ、プレゼンテーションを行います。</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 富良野高校科学部. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
