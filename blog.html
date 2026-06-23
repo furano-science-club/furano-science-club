@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部長のひとりごと - 富良野高校科学部</title>
+    <style>
+        /* --- デザインシステム（変数の定義） --- */
+        :root {
+            --bg-terminal: #05070a;   /* 完全な漆黒（コンソール背景） */
+            --primary-green: #38ef7d; /* サイバーグリーン（メイン文字） */
+            --text-white: #ffffff;    /* ハイライト用の白 */
+            --border-color: #1a2333;  /* 境界線 */
+            --font-terminal: 'Courier New', Courier, Consolas, 'Noto Sans Mono', monospace;
+        }
+
+        /* --- リセット＆基本スタイル --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-terminal);
+            color: var(--primary-green);
+            font-family: var(--font-terminal);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- ヘッダー（構造共通・ターミナル一体型ダーク版） --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 7, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo {
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .logo span {
+            color: var(--text-white);
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        nav a {
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px 0;
+            color: #4a5d78;
+        }
+        nav a:hover, nav a.active {
+            color: var(--primary-green);
+        }
+        nav a.active::after {
+            content: '_';
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* --- ターミナル風コンテナ --- */
+        .terminal-container {
+            max-width: 900px;
+            margin: 140px auto 0;
+            padding: 20px;
+        }
+
+        /* ターミナルウィンドウの枠組み */
+        .terminal-window {
+            border: 1px solid var(--border-color);
+            background-color: #090d16;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        /* ウィンドウのヘッダーバー */
+        .terminal-bar {
+            background-color: #111827;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .btn.close { background-color: #ef4444; }
+        .btn.minimize { background-color: #f59e0b; }
+        .btn.maximize { background-color: #10b981; }
+        .title-bar {
+            margin-auto: auto;
+            margin-left: 20px;
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+
+        /* ターミナルの中身 */
+        .terminal-body {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        /* プロンプト表現 */
+        .prompt {
+            color: #38bdf8; /* ユーザー名部分のライトブルー */
+            margin-bottom: 5px;
+        }
+        .prompt span {
+            color: var(--text-white);
+        }
+        .command {
+            color: var(--text-white);
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        /* 各ログ記事 */
+        .log-post {
+            margin-top: 15px;
+            margin-bottom: 40px;
+            padding-left: 15px;
+            border-left: 2px solid #1e293b;
+        }
+        .log-date {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .log-title {
+            color: var(--text-white);
+            font-size: 1.2rem;
+            margin: 5px 0 15px 0;
+            font-weight: bold;
+        }
+        .log-content {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .log-content p {
+            margin-bottom: 10px;
+        }
+
+        /* カーソルの点滅アニメーション */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: var(--primary-green);
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav ul { gap: 15px; }
+            nav a { font-size: 0.8rem; }
+            .terminal-body { padding: 15px; }
+            .log-title { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">FRN_<span>$ root_</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="water_quality.html">水質調査</a></li>
+                <li><a href="astronomy.html">天体観測</a></li>
+                <li><a href="hotaru_lab.html">ほたる研究室</a></li>
+                <li><a href="schedule.html">年間予定</a></li>
+                <li><a href="#" class="active">部長のひとりごと</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="terminal-container">
+        <div class="terminal-window">
+            
+            <div class="terminal-bar">
+                <div class="buttons">
+                    <div class="btn close"></div>
+                    <div class="btn minimize"></div>
+                    <div class="btn maximize"></div>
+                </div>
+                <div class="title-bar">furano_high_science_club_chief_room.sh</div>
+            </div>
+
+            <div class="terminal-body">
+                
+                <p>Last login: Tue Jun 23 21:41:16 JST 2026 on tty1</p>
+                <p>Welcome to the Science Club Chief's private log server.</p>
+                <br>
+
+                <div class="prompt">guest@furano-hs-sci:~$<span class="command">cat blog_log_01.md</span></div>
+                <div class="log-post">
+                    <div class="log-date">[TIMESTAMP: 2026.06.02]</div>
+                    <div class="log-title">部室のメインPCのOSをArch Linuxに変えてみた</div>
+                    <div class="log-content">
+                        <p>部室の隅で眠っていた型落ちのデスクトップPCを勝手に回収し、中身を完全フォーマットしてArch Linuxをクリーンインストールした。</p>
+                        <p>archinstallを使わずに手動でパーティションを切ってベースシステムを組み上げる時間は、何度やっても最高の現実逃避になる。ウィンドウマネージャーにはHyprlandを採用して、極限までメモリ消費の少ない軽量かつタイル型のデスクトップ環境（通称：Ricing）を構築中。部員からは「画面がハッカーみたいで近寄りづらい」と大不評だが、起動速度が爆速になったので部長としては大満足である。</p>
+                    </div>
+                </div>
+
+                <div class="prompt">guest@furano-hs-sci:~$<span class="command">cat blog_log_02.md</span></div>
+                <div class="log-post">
+                    <div class="log-date">[TIMESTAMP: 2026.05.18]</div>
+                    <div class="log-title">ジャンクで拾ったテレビの修理と、古典の先生の話</div>
+                    <div class="log-content">
+                        <p>リサイクルショップのジャンクコーナーで「電源入らず・通電のみ確認」という格安の液晶テレビを発見し、部費（という名の自腹）で購入して部室へ搬入した。裏蓋を開けて基板をテスターで追ってみたところ、電源基板のコンデンサが数箇所膨らんでいるのを発見。ハンダゴテを取り出して手持ちの新しいコンデンサと交換したところ、見事に鮮やかな映像が復活した。</p>
+                        <p>これで部活中のデータ確認用モニターが確保できたと喜んでいたら、顧問の古典の先生（実はかなりの歴史オタクでマニアックな人）が部室にフラッと現れ、テレビの復活を見て「まさに現代の錬金術だね」と、なぜか中世の技術史について熱く語っていかれた。部活終わりのこういう雑談が一番おもしろかったりする。</p>
+                    </div>
+                </div>
+
+                <div class="prompt">guest@furano-hs-sci:~$ <span class="cursor"></span></div>
+
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
