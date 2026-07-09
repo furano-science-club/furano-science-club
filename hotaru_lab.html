@@ -196,37 +196,47 @@
         .leaflet-popup-tip {
             background: #1a2026;
         }
+        
+        /* 構造化フォームのスタイル定義 */
         .map-form {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            min-width: 200px;
+            gap: 10px;
+            min-width: 240px;
+            padding: 5px 0;
         }
         .map-form label {
             font-size: 0.8rem;
             color: var(--primary);
+            display: block;
+            margin-bottom: 3px;
         }
-        .map-form textarea {
+        .map-form select, .map-form textarea {
+            width: 100%;
             background: #12161a;
             border: 1px solid var(--border-neon);
             color: #e2e8f0;
-            padding: 6px;
+            padding: 5px;
             border-radius: 4px;
-            resize: none;
             font-family: inherit;
+            font-size: 0.85rem;
         }
-        .map-form textarea:focus {
+        .map-form select:focus, .map-form textarea:focus {
             outline: none;
             border-color: var(--primary);
+        }
+        .map-form textarea {
+            resize: none;
         }
         .map-form button {
             background: var(--primary);
             color: #12161a;
             border: none;
-            padding: 6px;
+            padding: 8px;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 5px;
             transition: opacity 0.2s;
         }
         .map-form button:hover {
@@ -306,50 +316,115 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
-        // 1. 富良野盆地を中心に地図を初期化（富良野市、上富良野、中富良野、南富良野が見渡せる位置）
+        // 1. 富良野盆地を中心に地図を初期化
         const map = L.map('map').setView([43.3423, 142.3832], 11);
 
-        // 2. オープンストリートマップのタイル（ベース地図）を読み込み
+        // 2. オープンストリートマップのタイルを読み込み
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-        // テスト用のサンプルピン（後でD1データベースと連動させて自動化します）
+        // サンプルピン（綺麗に整形された表示のテスト用）
         const sampleMarker = L.marker([43.345, 142.39]).addTo(map);
-        sampleMarker.bindPopup("<b>【サンプルデータ】</b><br>去年の7月中旬、川沿いで数匹確認。");
+        sampleMarker.bindPopup(`
+            <div style="font-size:0.9rem; line-height:1.5;">
+                <b style="color:var(--primary); font-size:0.95rem;">📊 ホタル目撃情報</b><br>
+                <hr style="border:0; border-top:1px dashed var(--border-neon); margin:5px 0;">
+                <b>地域:</b> 富良野市<br>
+                <b>時期:</b> 7月中旬 (20:00〜21:00)<br>
+                <b>数量:</b> 3〜5匹（ちらほら）<br>
+                <b>メモ:</b> 川沿いの草むらで光っていました。
+            </div>
+        `);
 
-        // 3. 地図をクリックした時のイベント処理
+        // 3. 地図をクリックした時のイベント処理（集計用選択フォーム）
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
 
-            // クリックした場所に一時的なポップアップフォームを表示
             const popup = L.popup()
                 .setLatLng(e.latlng)
                 .setContent(`
                     <div class="map-form">
-                        <label>ここにほたるの目撃ピンを刺す</label>
-                        <textarea id="comment" rows="3" placeholder="例：7月上旬の20時頃、川沿いで3匹ほど光っていました。"></textarea>
-                        <button onclick="submitMarker(${lat}, ${lng})">送信する</button>
+                        <strong style="color: var(--primary); font-size: 0.95rem;">📊 目撃情報を入力</strong>
+                        
+                        <div>
+                            <label>📍 地域（町村）</label>
+                            <select id="pop-area">
+                                <option value="富良野市">富良野市</option>
+                                <option value="上富良野町">上富良野町</option>
+                                <option value="中富良野町">中富良野町</option>
+                                <option value="南富良野町">南富良野町</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>📅 目撃した時期</label>
+                            <select id="pop-period">
+                                <option value="6月下旬">6月下旬</option>
+                                <option value="7月上旬">7月上旬</option>
+                                <option value="7月中旬" selected>7月中旬</option>
+                                <option value="7月下旬">7月下旬</option>
+                                <option value="8月上旬">8月上旬</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>⏱️ 時間帯</label>
+                            <select id="pop-time">
+                                <option value="19:00〜20:00">19:00〜20:00</option>
+                                <option value="20:00〜21:00" selected>20:00〜21:00</option>
+                                <option value="21:00〜22:00">21:00〜22:00</option>
+                                <option value="22:00以降">22:00以降</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>✨ 目撃した数</label>
+                            <select id="pop-count">
+                                <option value="1〜2匹 (飛び始め)">1〜2匹（飛び始め）</option>
+                                <option value="3〜5匹 (ちらほら)">3〜5匹（ちらほら）</option>
+                                <option value="6〜10匹 (結構いる)">6〜10匹（結構いる）</option>
+                                <option value="11匹以上 (乱舞)">11匹以上（乱舞）</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>💬 補足・詳しい場所など</label>
+                            <textarea id="pop-comment" rows="2" placeholder="例：〇〇川の橋の近く、など"></textarea>
+                        </div>
+
+                        <button onclick="submitMarker(${lat}, ${lng})">この内容で送信</button>
                     </div>
                 `)
                 .openOn(map);
         });
 
-        // 4. データ送信処理（今はアラートを出すだけ。次のD1連携ステップでここを書き換えます）
+        // 4. データ送信＆仮ピン配置処理
         function submitMarker(lat, lng) {
-            const comment = document.getElementById('comment').value;
-            if(!comment) {
-                alert('コメントを入力してください。');
-                return;
-            }
+            const area = document.getElementById('pop-area').value;
+            const period = document.getElementById('pop-period').value;
+            const time = document.getElementById('pop-time').value;
+            const count = document.getElementById('pop-count').value;
+            const comment = document.getElementById('pop-comment').value;
 
-            // テストとして地図上にピンを仮配置
+            // 新しいピンを地図に立てて、選択されたデータを綺麗に表示
             const newMarker = L.marker([lat, lng]).addTo(map);
-            newMarker.bindPopup(`<b>目撃情報：</b><br>${comment}`).openPopup();
+            newMarker.bindPopup(`
+                <div style="font-size:0.9rem; line-height:1.5;">
+                    <b style="color:var(--primary); font-size:0.95rem;">📊 ホタル目撃情報</b><br>
+                    <hr style="border:0; border-top:1px dashed var(--border-neon); margin:5px 0;">
+                    <b>地域:</b> ${area}<br>
+                    <b>時期:</b> ${period} (${time})<br>
+                    <b>数量:</b> ${count}<br>
+                    ${comment ? `<b>メモ:</b> ${comment}` : ''}
+                </div>
+            `).openPopup();
             
-            alert(`【フロント動作確認】\n座標 [${lat.toFixed(4)}, ${lng.toFixed(4)}] にピンがリクエストされました。\nコメント: ${comment}\n\n※このデータはまだデータベースに保存されていません。次のステップでD1へ接続します！`);
+            // 抽出されたデータの確認用アラート
+            alert(`【集計用データの抽出成功】\n\n以下の形式のまま綺麗にデータベース（D1）へ送れるようになりました：\n・地域: ${area}\n・時期: ${period}\n・時間: ${time}\n・数量: ${count}\n・メモ: ${comment}\n・座標: [${lat.toFixed(4)}, ${lng.toFixed(4)}]`);
+            
             map.closePopup();
         }
     </script>
