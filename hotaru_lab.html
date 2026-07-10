@@ -184,6 +184,21 @@
             background-color: #1a2026;
         }
 
+        /* 2Dマップ選択時に科学部風のダークカラーにするフィルター（航空写真には適用しないようにスクリプト側で制御） */
+        .dark-map-filter {
+            filter: invert(100%) hue-rotate(90deg) brightness(95%) contrast(90%);
+        }
+
+        /* 右上のレイヤーコントロールのダークモード調整 */
+        .leaflet-control-layers {
+            background: #1a2026 !important;
+            color: #e2e8f0 !important;
+            border: 1px solid var(--border-neon) !important;
+            font-family: var(--font-family);
+            font-size: 0.85rem;
+            border-radius: 4px;
+        }
+
         /* ポップアップ内のデザイン調整 */
         .leaflet-popup-content-wrapper {
             background: #1a2026;
@@ -284,7 +299,8 @@
         
         <div class="lab-note">
             <h2>富良野地域 ほたる目撃共有マップ</h2>
-            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。地名が表示された航空写真から、目撃した場所を<strong>クリック（またはタップ）</strong>するだけで、誰でもピンを刺して情報を共有できます。</p>
+            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、通常の<strong>「2Dマップ」</strong>と詳細な情報が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
+            <p>目撃した場所を<strong>クリック（またはタップ）</strong>すると、ピンを刺して情報を共有できます。</p>
             
             <div id="map"></div>
         </div>
@@ -316,20 +332,43 @@
         // 1. 富良野盆地を中心に地図を初期化
         const map = L.map('map').setView([43.3423, 142.3832], 11);
 
-        // 2. 地図のベースレイヤー（航空衛星写真 ＋ 文字・道路ラベルの2層構造）
+        // 2. 各種地図レイヤーの定義
         
-        // ① ベースにリアルな航空写真を敷く（Esri World Imagery）
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        // 【A】2Dダークマップ用（基本のタイル）
+        const dark2D = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            className: 'dark-map-filter' // CSSでサイバー風の色合いに反転
+        });
+
+        // 【B】航空衛星写真 ＋ 詳細ラベル（L.layerGroupで2つの層をセットにする）
+        const satelliteImg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS'
-        }).addTo(map);
+        });
 
-        // ② その上に「道路の線」や「市区町村名・学校・お店・公園名」の文字レイヤーを重ねる（CARTO Light Only Labels）
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        // より詳細な店名・公園名・アイコンが含まれるオーバーレイラベル
+        const detailedLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            pane: 'markerPane' // 文字ラベルがピンの邪魔（上被り）をしないように、少し下の層に滑り込ませる設定
-        }).addTo(map);
+            pane: 'markerPane' // ラベルがピンの下に潜り込むように設定
+        });
+
+        // 衛星写真と詳細ラベルを1つのグループにまとめる
+        const satelliteGroup = L.layerGroup([satelliteImg, detailedLabels]);
+
+        // 初期表示は「航空写真」にしてマップに追加
+        satelliteGroup.addTo(map);
+
+        // 3. レイヤー切り替えコントロールを右下か右上に追加
+        const baseMaps = {
+            "航空写真マップ": satelliteGroup,
+            "2Dダークマップ": dark2D
+        };
+
+        // 右上にコントロールパネルを設置
+        L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
+
 
         // サンプルピン（表示確認用）
         const sampleMarker = L.marker([43.345, 142.39]).addTo(map);
@@ -343,7 +382,7 @@
             </div>
         `);
 
-        // 3. 地図をクリックした時のイベント処理（時期・時間を細分化した入力フォーム表示）
+        // 4. 地図をクリックした時のイベント処理
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
@@ -403,7 +442,7 @@
                 .openOn(map);
         });
 
-        // 4. データ送信＆仮ピン配置処理
+        // 5. データ送信＆仮ピン配置処理
         function submitMarker(lat, lng) {
             const period = document.getElementById('pop-period').value;
             const time = document.getElementById('pop-time').value;
@@ -422,7 +461,7 @@
                 </div>
             `).openPopup();
             
-            // 抽出データの確認用アラート（純粋な座標データ＋細分化された構造化データ）
+            // 抽出データの確認用アラート
             alert(`【集計用データの抽出成功】\n\n細分化されたデータが取得できました：\n・時期: ${period}\n・時間: ${time}\n・数量: ${count}\n・メモ: ${comment}\n・座標: [${lat.toFixed(6)}, ${lng.toFixed(6)}]`);
             
             map.closePopup();
