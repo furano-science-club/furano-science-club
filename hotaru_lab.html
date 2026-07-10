@@ -184,12 +184,9 @@
             background-color: #1a2026;
         }
 
-        /* 2Dマップ選択時に科学部風のダークカラーにするフィルター（航空写真には適用しないようにスクリプト側で制御） */
-        .dark-map-filter {
-            filter: invert(100%) hue-rotate(90deg) brightness(95%) contrast(90%);
-        }
+        /* ダークフィルターは完全に廃止しました（もともとの見慣れたカラーになります） */
 
-        /* 右上のレイヤーコントロールのダークモード調整 */
+        /* 右上のレイヤーコントロールのレイアウト調整（文字がマップの邪魔をしないように調整） */
         .leaflet-control-layers {
             background: #1a2026 !important;
             color: #e2e8f0 !important;
@@ -197,9 +194,14 @@
             font-family: var(--font-family);
             font-size: 0.85rem;
             border-radius: 4px;
+            padding: 6px 10px !important;
+        }
+        .leaflet-control-layers-list label {
+            color: #e2e8f0 !important;
+            cursor: pointer;
         }
 
-        /* ポップアップ内のデザイン調整 */
+        /* ポップアップ内のデザイン調整（マップの色が明るくなっても文字が読めるようダーク系のまま維持） */
         .leaflet-popup-content-wrapper {
             background: #1a2026;
             color: #e2e8f0;
@@ -299,8 +301,8 @@
         
         <div class="lab-note">
             <h2>富良野地域 ほたる目撃共有マップ</h2>
-            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、通常の<strong>「2Dマップ」</strong>と詳細な情報が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
-            <p>目撃した場所を<strong>クリック（またはタップ）</strong>すると、ピンを刺して情報を共有できます。</p>
+            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、通常の<strong>「2Dマップ」</strong>と詳細な地名が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
+            <p>目撃した場所を特定したら、その地点を<strong>クリック（またはタップ）</strong>してピンを刺し、情報を共有してください。</p>
             
             <div id="map"></div>
         </div>
@@ -334,39 +336,39 @@
 
         // 2. 各種地図レイヤーの定義
         
-        // 【A】2Dダークマップ用（基本のタイル）
-        const dark2D = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // 【A】2D通常マップ（OpenStreetMap標準。フィルターなしの元のカラー地図）
+        const normal2D = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            className: 'dark-map-filter' // CSSでサイバー風の色合いに反転
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         });
 
-        // 【B】航空衛星写真 ＋ 詳細ラベル（L.layerGroupで2つの層をセットにする）
+        // 【B】航空衛星写真 ＋ 国土地理院の詳細文字ラベル（2つをグループ化）
         const satelliteImg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS'
         });
 
-        // より詳細な店名・公園名・アイコンが含まれるオーバーレイラベル
-        const detailedLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+        // 国土地理院提供の「地名・道路・学校・公園・店舗名など」の透過ラベル（一番詳細です）
+        const gsirLabels = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/anno/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            pane: 'markerPane' // ラベルがピンの下に潜り込むように設定
+            attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
+            pane: 'markerPane' // ラベル文字がピンの上に被らないようにする設定
         });
 
-        // 衛星写真と詳細ラベルを1つのグループにまとめる
-        const satelliteGroup = L.layerGroup([satelliteImg, detailedLabels]);
+        // 航空写真と国土地理院ラベルをセットにする
+        const satelliteGroup = L.layerGroup([satelliteImg, gsirLabels]);
 
-        // 初期表示は「航空写真」にしてマップに追加
-        satelliteGroup.addTo(map);
 
-        // 3. レイヤー切り替えコントロールを右下か右上に追加
+        // 3. レイヤー切り替えコントロールの設定
         const baseMaps = {
-            "航空写真マップ": satelliteGroup,
-            "2Dダークマップ": dark2D
+            "2Dマップ (標準)": normal2D,
+            "航空写真マップ": satelliteGroup
         };
 
-        // 右上にコントロールパネルを設置
+        // 初期状態で「2D通常マップ」を表示（最初にmapに追加したレイヤーがデフォルトになります）
+        normal2D.addTo(map);
+
+        // レイヤー切り替えコントロールを右上に配置（collapsed: false で常に開いた状態にする）
         L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 
