@@ -183,10 +183,9 @@
             margin-top: 15px;
             background-color: #1a2026;
         }
-        /* 地図をサイバーなダークモード風にするフィルター */
-        .leaflet-tile-container {
-            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-        }
+
+        /* 航空衛星写真レイヤーにするため、旧地図用のカラー反転フィルターは削除しました */
+
         /* ポップアップ内のデザイン調整 */
         .leaflet-popup-content-wrapper {
             background: #1a2026;
@@ -287,7 +286,7 @@
         
         <div class="lab-note">
             <h2>富良野地域 ほたる目撃共有マップ</h2>
-            <p>富良野盆地周辺（富良野市・上富良野・中富良野・南富良野）でのホタルの目撃情報をアーカイブするマップです。地図上の目撃した場所を<strong>クリック（またはタップ）</strong>すると、ログインなしで誰でもピンを刺して情報を共有できます。</p>
+            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。航空写真から目撃した場所を<strong>クリック（またはタップ）</strong>すると、ログインなしで誰でもピンを刺して情報を共有できます。</p>
             
             <div id="map"></div>
         </div>
@@ -319,26 +318,25 @@
         // 1. 富良野盆地を中心に地図を初期化
         const map = L.map('map').setView([43.3423, 142.3832], 11);
 
-        // 2. オープンストリートマップのタイルを読み込み
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // 2. 地図のベースレイヤーを「航空衛星写真」に設定（Esri World Imagery）
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }).addTo(map);
 
-        // サンプルピン（綺麗に整形された表示のテスト用）
+        // サンプルピン（表示確認用）
         const sampleMarker = L.marker([43.345, 142.39]).addTo(map);
         sampleMarker.bindPopup(`
             <div style="font-size:0.9rem; line-height:1.5;">
                 <b style="color:var(--primary); font-size:0.95rem;">📊 ホタル目撃情報</b><br>
                 <hr style="border:0; border-top:1px dashed var(--border-neon); margin:5px 0;">
-                <b>地域:</b> 富良野市<br>
-                <b>時期:</b> 7月中旬 (20:00〜21:00)<br>
+                <b>時期:</b> 7月中旬 (20:00〜20:30)<br>
                 <b>数量:</b> 3〜5匹（ちらほら）<br>
                 <b>メモ:</b> 川沿いの草むらで光っていました。
             </div>
         `);
 
-        // 3. 地図をクリックした時のイベント処理（集計用選択フォーム）
+        // 3. 地図をクリックした時のイベント処理（地域選択を廃止し、時期・時間を細分化）
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
@@ -350,33 +348,30 @@
                         <strong style="color: var(--primary); font-size: 0.95rem;">📊 目撃情報を入力</strong>
                         
                         <div>
-                            <label>📍 地域（町村）</label>
-                            <select id="pop-area">
-                                <option value="富良野市">富良野市</option>
-                                <option value="上富良野町">上富良野町</option>
-                                <option value="中富良野町">中富良野町</option>
-                                <option value="南富良野町">南富良野町</option>
-                            </select>
-                        </div>
-
-                        <div>
                             <label>📅 目撃した時期</label>
                             <select id="pop-period">
+                                <option value="6月上旬">6月上旬</option>
+                                <option value="6月中旬">6月中旬</option>
                                 <option value="6月下旬">6月下旬</option>
                                 <option value="7月上旬">7月上旬</option>
                                 <option value="7月中旬" selected>7月中旬</option>
                                 <option value="7月下旬">7月下旬</option>
                                 <option value="8月上旬">8月上旬</option>
+                                <option value="8月中旬">8月中旬</option>
+                                <option value="8月下旬">8月下旬</option>
                             </select>
                         </div>
 
                         <div>
                             <label>⏱️ 時間帯</label>
                             <select id="pop-time">
-                                <option value="19:00〜20:00">19:00〜20:00</option>
-                                <option value="20:00〜21:00" selected>20:00〜21:00</option>
-                                <option value="21:00〜22:00">21:00〜22:00</option>
-                                <option value="22:00以降">22:00以降</option>
+                                <option value="19:00〜19:30">19:00〜19:30（日没直後）</option>
+                                <option value="19:30〜20:00">19:30〜20:00</option>
+                                <option value="20:00〜20:30" selected>20:00〜20:30（ピーク時間帯）</option>
+                                <option value="20:30〜21:00">20:30〜21:00</option>
+                                <option value="21:00〜21:30">21:00〜21:30</option>
+                                <option value="21:30〜22:00">21:30〜22:00</option>
+                                <option value="22:00以降">22:00以降（深夜）</option>
                             </select>
                         </div>
 
@@ -403,27 +398,25 @@
 
         // 4. データ送信＆仮ピン配置処理
         function submitMarker(lat, lng) {
-            const area = document.getElementById('pop-area').value;
             const period = document.getElementById('pop-period').value;
             const time = document.getElementById('pop-time').value;
             const count = document.getElementById('pop-count').value;
             const comment = document.getElementById('pop-comment').value;
 
-            // 新しいピンを地図に立てて、選択されたデータを綺麗に表示
+            // 新しいピンを配置
             const newMarker = L.marker([lat, lng]).addTo(map);
             newMarker.bindPopup(`
                 <div style="font-size:0.9rem; line-height:1.5;">
                     <b style="color:var(--primary); font-size:0.95rem;">📊 ホタル目撃情報</b><br>
                     <hr style="border:0; border-top:1px dashed var(--border-neon); margin:5px 0;">
-                    <b>地域:</b> ${area}<br>
                     <b>時期:</b> ${period} (${time})<br>
                     <b>数量:</b> ${count}<br>
                     ${comment ? `<b>メモ:</b> ${comment}` : ''}
                 </div>
             `).openPopup();
             
-            // 抽出されたデータの確認用アラート
-            alert(`【集計用データの抽出成功】\n\n以下の形式のまま綺麗にデータベース（D1）へ送れるようになりました：\n・地域: ${area}\n・時期: ${period}\n・時間: ${time}\n・数量: ${count}\n・メモ: ${comment}\n・座標: [${lat.toFixed(4)}, ${lng.toFixed(4)}]`);
+            // 抽出データの確認用アラート（純粋な座標データ＋細分化された構造化データ）
+            alert(`【集計用データの抽出成功】\n\n細分化されたデータが取得できました：\n・時期: ${period}\n・時間: ${time}\n・数量: ${count}\n・メモ: ${comment}\n・座標: [${lat.toFixed(6)}, ${lng.toFixed(6)}]`);
             
             map.closePopup();
         }
