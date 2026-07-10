@@ -184,9 +184,7 @@
             background-color: #1a2026;
         }
 
-        /* ダークフィルターは完全に廃止しました（もともとの見慣れたカラーになります） */
-
-        /* 右上のレイヤーコントロールのレイアウト調整（文字がマップの邪魔をしないように調整） */
+        /* 右上のレイヤーコントロールのレイアウト調整 */
         .leaflet-control-layers {
             background: #1a2026 !important;
             color: #e2e8f0 !important;
@@ -301,7 +299,7 @@
         
         <div class="lab-note">
             <h2>富良野地域 ほたる目撃共有マップ</h2>
-            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、通常の<strong>「2Dマップ」</strong>と詳細な地名が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
+            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、いつもの<strong>「通常の地図」</strong>と詳細な学校・お店・道路名が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
             <p>目撃した場所を特定したら、その地点を<strong>クリック（またはタップ）</strong>してピンを刺し、情報を共有してください。</p>
             
             <div id="map"></div>
@@ -336,39 +334,30 @@
 
         // 2. 各種地図レイヤーの定義
         
-        // 【A】2D通常マップ（OpenStreetMap標準。フィルターなしの元のカラー地図）
-        const normal2D = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // 【A】通常の地図（OpenStreetMap標準のカラーマップ）
+        const normalMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         });
 
-        // 【B】航空衛星写真 ＋ 国土地理院の詳細文字ラベル（2つをグループ化）
-        const satelliteImg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        // 【B】航空写真マップ（高精度衛星写真 ＋ 透過型詳細道路・店舗・公園名レイヤー）
+        // 地名、学校、公園、店舗アイコン、道路名、河川名がくまなく重なる最強のレイヤー構成
+        const satelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
             maxZoom: 18,
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS'
+            attribution: '&copy; Google Maps'
         });
-
-        // 国土地理院提供の「地名・道路・学校・公園・店舗名など」の透過ラベル（一番詳細です）
-        const gsirLabels = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/anno/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
-            pane: 'markerPane' // ラベル文字がピンの上に被らないようにする設定
-        });
-
-        // 航空写真と国土地理院ラベルをセットにする
-        const satelliteGroup = L.layerGroup([satelliteImg, gsirLabels]);
 
 
         // 3. レイヤー切り替えコントロールの設定
         const baseMaps = {
-            "2Dマップ (標準)": normal2D,
-            "航空写真マップ": satelliteGroup
+            "通常の地図": normalMap,
+            "航空写真": satelliteHybrid
         };
 
-        // 初期状態で「2D通常マップ」を表示（最初にmapに追加したレイヤーがデフォルトになります）
-        normal2D.addTo(map);
+        // 初期状態で「通常の地図」を表示
+        normalMap.addTo(map);
 
-        // レイヤー切り替えコントロールを右上に配置（collapsed: false で常に開いた状態にする）
+        // レイヤー切り替えコントロールを右上に配置（常にメニューを開いた状態にする）
         L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 
