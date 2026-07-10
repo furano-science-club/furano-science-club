@@ -199,7 +199,7 @@
             cursor: pointer;
         }
 
-        /* ポップアップ内のデザイン調整（マップの色が明るくなっても文字が読めるようダーク系のまま維持） */
+        /* ポップアップ内のデザイン調整 */
         .leaflet-popup-content-wrapper {
             background: #1a2026;
             color: #e2e8f0;
@@ -299,7 +299,7 @@
         
         <div class="lab-note">
             <h2>富良野地域 ほたる目撃共有マップ</h2>
-            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、いつもの<strong>「通常の地図」</strong>と詳細な学校・お店・道路名が重なる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
+            <p>富良野盆地周辺でのホタルの目撃情報をアーカイブするマップです。画面右上のボタンから、地名や建物が詳しくわかる<strong>「通常の地図」</strong>と、実際の地形が確認できる<strong>「航空写真」</strong>を自由に切り替えられます。</p>
             <p>目撃した場所を特定したら、その地点を<strong>クリック（またはタップ）</strong>してピンを刺し、情報を共有してください。</p>
             
             <div id="map"></div>
@@ -332,32 +332,42 @@
         // 1. 富良野盆地を中心に地図を初期化
         const map = L.map('map').setView([43.3423, 142.3832], 11);
 
-        // 2. 各種地図レイヤーの定義
+        // 2. 各種地図レイヤーの定義（すべてライセンス上クリアなソースを使用）
         
-        // 【A】通常の地図（OpenStreetMap標準のカラーマップ）
-        const normalMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        // 【A】通常の地図（国土地理院 標準地図）
+        // 日本国内のインフラ・学校・店舗名・道路が非常に正確に網羅されており、Web公開も規約上安全です。
+        const normalMap = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>'
         });
 
-        // 【B】航空写真マップ（高精度衛星写真 ＋ 透過型詳細道路・店舗・公園名レイヤー）
-        // 地名、学校、公園、店舗アイコン、道路名、河川名がくまなく重なる最強のレイヤー構成
-        const satelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        // 【B】航空写真マップ（オープンなEsriの衛星写真 ＋ 国土地理院の透過型文字ラベルをグループ化）
+        const satelliteImg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
-            attribution: '&copy; Google Maps'
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS'
         });
+
+        // 国土地理院の透過ラベル（航空写真の上に重なる詳細な道路・駅名・地名）
+        const gsiLabels = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/anno/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
+            pane: 'markerPane' // 文字がピンの上に被らないようにする設定
+        });
+
+        // 衛星写真と国土地理院ラベルをセットにして一つのレイヤーにする
+        const satelliteGroup = L.layerGroup([satelliteImg, gsiLabels]);
 
 
         // 3. レイヤー切り替えコントロールの設定
         const baseMaps = {
             "通常の地図": normalMap,
-            "航空写真": satelliteHybrid
+            "航空写真": satelliteGroup
         };
 
         // 初期状態で「通常の地図」を表示
         normalMap.addTo(map);
 
-        // レイヤー切り替えコントロールを右上に配置（常にメニューを開いた状態にする）
+        // レイヤー切り替えコントロールを右上に配置（メニューを常に開いた状態にする）
         L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
 
 
